@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2f78c4">
+<title>Rezepte – Mien Plaut</title>
+<style>
+:root{
+  --blue:#165eb3;--blue-dark:#0d3f80;--red:#d94247;--ink:#17324f;
+  --muted:#718197;--line:#dfe8f1;--bg:#f5f8fc;--card:#fff
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+button,input{font:inherit}
+a{color:inherit;text-decoration:none}
+.top{
+  background:linear-gradient(145deg,#307fd0,#155eb2 55%,#0d4389);
+  color:#fff;padding:calc(24px + env(safe-area-inset-top)) 20px 28px;
+  border-radius:0 0 30px 30px;box-shadow:0 12px 32px rgba(24,78,134,.22)
+}
+.top-inner,.main{width:min(1050px,calc(100% - 24px));margin:auto}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.back{font-size:1.5rem}
+.brand{text-align:center}
+.brand strong{display:block;font:700 1.4rem Georgia,serif}
+.brand span{font-size:.82rem;opacity:.9}
+.hero-copy{margin-top:24px}
+.hero-copy h1{margin:0;font:700 clamp(2rem,8vw,3.5rem)/1.05 Georgia,serif}
+.hero-copy p{margin:9px 0 0;opacity:.92}
+.main{padding:18px 0 40px}
+.search{
+  display:grid;grid-template-columns:38px 1fr;align-items:center;
+  background:#fff;border:1px solid var(--line);border-radius:18px;padding:0 10px;
+  height:54px;box-shadow:0 8px 22px rgba(30,76,121,.08)
+}
+.search input{border:0;outline:0;width:100%;height:100%;background:transparent}
+.filters{display:flex;gap:9px;overflow:auto;padding:14px 0 4px}
+.filter{
+  flex:0 0 auto;border:1px solid #d9e5f1;background:#fff;color:var(--blue-dark);
+  padding:10px 15px;border-radius:14px;font-weight:700
+}
+.filter.active{background:var(--red);color:#fff;border-color:var(--red)}
+.section-title{display:flex;justify-content:space-between;align-items:end;margin:20px 2px 12px}
+.section-title h2{margin:0;font:700 1.45rem Georgia,serif}
+.section-title span{font-size:.84rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr;gap:10px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 8px 20px rgba(31,77,121,.08);cursor:pointer}
+.cover{height:95px;position:relative;overflow:hidden;background:#eaf1f8}
+.recipe-image{width:100%;height:100%;object-fit:cover;display:block}
+.cover:after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.45),transparent 45%)
+}
+.badge{
+  position:absolute;left:12px;top:12px;z-index:1;
+  background:rgba(255,255,255,.92);color:var(--red);
+  border-radius:999px;padding:6px 10px;font-size:.73rem;font-weight:800
+}
+.card-body{padding:13px 14px 14px}
+.card h3{margin:0 0 6px;font:700 1.18rem Georgia,serif;color:#103f83}
+.card p{margin:0;color:#53667a;line-height:1.42;font-size:.9rem;min-height:2.55em}
+.meta{display:flex;gap:14px;margin-top:13px;color:#40546a;font-size:.78rem}
+.detail{display:none}
+.detail.open{display:block}
+.list-view.hidden{display:none}
+.detail-hero{height:220px;border-radius:24px;position:relative;overflow:hidden;box-shadow:0 10px 26px rgba(33,105,175,.16);background:#eaf1f8}
+
+.detail-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.18))}
+.detail-back{
+  position:absolute;left:14px;top:14px;z-index:2;width:42px;height:42px;border:0;
+  border-radius:50%;background:rgba(255,255,255,.94);color:var(--blue-dark);font-size:1.25rem
+}
+.detail-card{
+  margin-top:-16px;position:relative;background:#fff;border:1px solid var(--line);
+  border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(31,77,121,.12)
+}
+.detail-card h1{margin:0;color:#103f83;font:700 2rem Georgia,serif}
+.detail-desc{color:#53667a;line-height:1.5}
+.tradition-box{margin:14px 0 18px;padding:14px 16px;border-radius:16px;background:#fff8e8;border:1px solid #f3dfaa;color:#5b4a22;line-height:1.45}
+.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:18px 0}
+.quick div{background:#eef6ff;border-radius:14px;padding:12px;font-size:.86rem}
+.recipe-section{border-top:1px solid var(--line);padding-top:18px;margin-top:18px}
+.recipe-section h2{font:700 1.25rem Georgia,serif;color:#103f83}
+.ingredients{padding-left:20px;line-height:1.6}
+.steps{list-style:none;padding:0;counter-reset:step}
+.steps li{counter-increment:step;display:grid;grid-template-columns:28px 1fr;gap:10px;margin:12px 0;line-height:1.5}
+.steps li:before{
+  content:counter(step);display:grid;place-items:center;width:25px;height:25px;
+  border-radius:50%;background:var(--red);color:#fff;font-size:.76rem;font-weight:800
+}
+.tip{background:#fff0f1;border:1px solid #ffd4d6;border-radius:16px;padding:15px;line-height:1.5}
+.source{font-size:.78rem;color:var(--muted);margin-top:18px}
+.empty{display:none;text-align:center;color:var(--muted);padding:35px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(2,1fr)}.quick{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:950px){.grid{grid-template-columns:repeat(3,1fr)}}
+
+.compact-card{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;min-height:108px}
+.thumb{width:92px;height:92px;overflow:hidden;background:#eaf1f8;border-radius:15px;margin-left:8px;align-self:center}
+
+.compact-card .card-body{padding:11px 13px 10px}
+.card-topline{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-topline h3{margin:0 0 4px;font-size:1.05rem}
+.chevron{font-size:1.4rem;color:#8a98a8}
+.compact-card p{font-size:.82rem;line-height:1.3;min-height:0;margin:0;color:#5a6b7d}
+.compact-card .meta{margin-top:8px;font-size:.72rem;gap:12px}
+@media(min-width:700px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+
+.thumb .recipe-image,
+.detail-hero .recipe-image{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="nav">
+      <a class="back" href="index.html">‹</a>
+      <div class="brand"><strong>Mien Plaut</strong><span>Tradition bewahren. Familie verbinden. Kultur weitergeben.</span></div>
+      <span>♡</span>
+    </div>
+    <div class="hero-copy">
+      <h1>Plautdietsche Küche</h1>
+      <p>Traditionelle Gerichte unserer Familien</p>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <section class="list-view" id="listView">
+    <label class="search">
+      <span>⌕</span>
+      <input id="search" type="search" placeholder="Suche nach Rezepten …">
+    </label>
+
+    <div class="filters" id="filters"></div>
+
+    <div class="section-title">
+      <h2>Rezepte</h2>
+      <span id="count"></span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty">Kein Rezept gefunden.</div>
+  </section>
+
+  <section class="detail" id="detail"></section>
+</main>
+
+<script>
+const recipes=[{"id": "loesesuppe", "name": "Klößesuppe", "category": "Suppen", "emoji": "🥣", "color": "linear-gradient(145deg,#d8ecff,#86b8e7)", "description": "Herzhafte Fleischbrühe mit zwei traditionellen Klößchenvarianten.", "time": "ca. 2 Std.", "portions": "Familienportion", "ingredients": ["500 g Rinderknochen", "1 Zwiebel", "Lorbeerblätter", "Salz und Pfeffer", "Für die Mehlklöße: 3 Eier, 100 ml Milch und Mehl nach Bedarf", "Für die Grießklöße: 3 Eier, 1 EL weiche Butter und ½ Glas Grieß"], "steps": ["Die Rinderknochen in Salzwasser vollständig gar kochen.", "Zwiebel und Lorbeerblätter in die Brühe geben und mit Salz und Pfeffer abschmecken.", "Für die Mehlklöße Eier und Milch verrühren und so viel Mehl einarbeiten, bis eine formbare Masse entsteht.", "Für die Grießklöße die Eier trennen. Eigelb mit Butter und Grieß verrühren, das Eiweiß steif schlagen und vorsichtig unterheben.", "Die Grießmasse etwa 15 Minuten kühl stellen.", "Die Klöße mit einem Löffel formen, in die kochende Brühe geben und gar ziehen lassen."], "tip": "Statt der Klöße können auch Eierstich oder kleine Vierecke aus festem Eierteig in die Suppe gegeben werden.", "tradition": "Traditionelle Suppe plautdeutscher Familien."}, {"id": "gruener-borschtsch", "name": "Grüner Borschtsch", "category": "Suppen", "emoji": "🥬", "color": "linear-gradient(145deg,#dff3da,#79b96f)", "description": "Traditionelle Suppe mit Sauerampfer, Ei, Schmand und frischen Kräutern.", "time": "ca. 75 Min.", "portions": "6–8 Portionen", "ingredients": ["500 g Fleisch, zum Beispiel Hähnchen oder Schwein", "6 Kartoffeln", "100 g Graupen oder Reis", "1 Zwiebel", "200 g Sauerampfer", "5 Eier", "Salz und Pfeffer", "1 Becher Schmand", "1 Bund Dill und Lauch"], "steps": ["Das Fleisch in Salzwasser gar kochen.", "Die Kartoffeln in große Würfel schneiden und zusammen mit den Graupen oder dem Reis in der Brühe garen.", "Zwiebel und Sauerampfer fein schneiden und in die kochende Suppe geben.", "Die Eier hart kochen, würfeln und kurz vor dem Servieren hinzufügen.", "Mit Salz und Pfeffer abschmecken und den Schmand einrühren.", "Dill und Lauch fein hacken und darüberstreuen."], "tip": "Auch geräucherter Schinken oder Kasseler können verwendet werden.", "tradition": "In vielen Familien aus Osteuropa und Zentralasien verbreitet."}, {"id": "borschtsch", "name": "Borschtsch", "category": "Suppen", "emoji": "🍲", "color": "linear-gradient(145deg,#ffd9dd,#cf4050)", "description": "Klassische Rote-Bete-Suppe mit Kohl, Kartoffeln und Schmand.", "time": "ca. 90 Min.", "portions": "6–8 Portionen", "ingredients": ["500 g Fleisch mit Knochen", "500 g Kohl", "6 Kartoffeln", "3 Zwiebeln", "1 Möhre", "1 Rote Bete", "1 Knoblauchzehe", "3–4 EL Tomatenmark oder Ketchup", "1 Becher Schmand", "1 Bund Dill", "Lorbeerblatt, Salz und Pfeffer"], "steps": ["Das Fleisch mit Lorbeerblatt in Salzwasser gar kochen, herausnehmen und in mundgerechte Stücke schneiden.", "Die Brühe durchsieben und das Fleisch warm halten.", "Den Kohl fein raspeln, die Kartoffeln würfeln und beides in der Brühe garen.", "Die Zwiebeln fein würfeln und in etwas Öl anbraten.", "Die Möhre raspeln, die Rote Bete reiben und den Knoblauch pressen.", "Tomatenmark oder Ketchup zum Gemüse geben und kurz mitdünsten.", "Das Gemüse in den Suppentopf geben, mit Salz und Pfeffer abschmecken und den Schmand einrühren.", "Den Dill fein hacken und über die Suppe streuen."], "tip": "Die Rote Bete möglichst spät hinzufügen, damit die kräftige Farbe erhalten bleibt.", "tradition": "Tradition aus Osteuropa, in vielen plautdeutschen Familien weitergegeben."}, {"id": "spargel-cremesuppe", "name": "Spargelcremesuppe", "category": "Suppen", "emoji": "🥄", "color": "linear-gradient(145deg,#fff8dc,#e6d8a6)", "description": "Eine einfache, fein-cremige Spargelsuppe mit Sahne.", "time": "ca. 35 Min.", "portions": "4 Portionen", "ingredients": ["2 gehäufte EL Butter", "2 gehäufte EL Mehl", "½ l Hühnerbrühe", "250 g Spargelstückchen", "Salz und Zucker", "200 ml Sahne"], "steps": ["Die Butter in einem Topf zerlassen.", "Das Mehl darin anschwitzen, bis es leicht gebräunt ist.", "Mit der Hühnerbrühe ablöschen und glatt rühren.", "Die Spargelstückchen hinzufügen und gar ziehen lassen.", "Mit Salz und etwas Zucker abschmecken.", "Die Sahne einrühren und die Suppe anschließend nicht mehr stark kochen lassen."], "tip": "Für eine besonders feine Konsistenz kann ein Teil der Spargelstückchen püriert werden.", "tradition": "Klassische Hausmannskost mit regionalen Varianten."}, {"id": "nudelplov", "name": "Nudelplov", "category": "Hauptspeisen", "emoji": "🍝", "color": "linear-gradient(145deg,#ffe1b9,#d99b47)", "description": "Deftiges Nudelgericht mit Fleisch, Zwiebeln und Möhren.", "time": "ca. 60 Min.", "portions": "6 Portionen", "ingredients": ["500 g Fleisch nach Wahl", "500 g Zwiebeln", "600 g Möhren", "Salz und Pfeffer", "1 Lorbeerblatt", "300 ml Wasser", "500 g Bandnudeln"], "steps": ["Das Fleisch würfeln und kräftig anbraten.", "Die Zwiebeln schälen, klein schneiden und zum Fleisch geben.", "Die Möhren schälen, würfeln und mit anbraten.", "Mit Salz, Pfeffer und Lorbeerblatt würzen.", "Das Wasser zugießen und alles etwa 15 Minuten köcheln lassen.", "Die Bandnudeln nach Packungsanweisung kochen, abgießen und unter die Fleischmasse rühren."], "tip": "Die Nudeln können auch roh mit dem Fleisch garen. Dann etwas mehr Wasser hinzufügen.", "tradition": "Familiengericht mit Einflüssen aus Zentralasien."}, {"id": "suelzfleisch", "name": "Sülzfleisch", "category": "Fleischgerichte", "emoji": "🥩", "color": "linear-gradient(145deg,#ecd8cc,#a97b65)", "description": "Traditionelles Sülzfleisch aus Eisbein und Schweinepfote.", "time": "ca. 3 Std. + Kühlzeit", "portions": "10 Portionen", "ingredients": ["2,4 kg Eisbein vom Schwein", "700 g Schweinepfote", "1 EL Salz", "600 ml Wasser", "Salz und Pfeffer", "Für die Essiglake: 1 l Wasser, 1 EL Salz und Essig nach Geschmack"], "steps": ["Eisbein, Pfote, Salz und Wasser zusammen etwa 2 Stunden kochen.", "Fleisch herausnehmen und sorgfältig von den Knochen lösen.", "Das Fleisch sofort zerkleinern und mit der Kochflüssigkeit vermengen.", "Mit Salz und Pfeffer abschmecken.", "In kleine ausgespülte Schüsseln füllen und vollständig erkalten lassen.", "Aus Wasser, Salz und Essig eine Lake herstellen und über das Fleisch geben."], "tip": "Die Essiglake unterstützt die längere Haltbarkeit und gibt einen typischen säuerlichen Geschmack.", "tradition": "Traditionelle plautdeutsche Hausmannskost."}, {"id": "lagman", "name": "Lagman", "category": "Suppen", "emoji": "🍜", "color": "linear-gradient(145deg,#ffddac,#d58a3a)", "description": "Würzige Nudelsuppe mit Fleisch, Rettich, Paprika und Tomate.", "time": "ca. 1 Std.", "portions": "4 Portionen", "ingredients": ["500 g Rind- oder Schweinefleisch", "Öl zum Anbraten", "2 Zwiebeln", "½ Rettich", "1 rote Paprika", "1 scharfe Peperoni", "70 g Tomatenmark", "Salz und Pfeffer", "1 l Wasser", "500 g Spaghetti"], "steps": ["Fleisch klein würfeln und in Öl anbraten.", "Zwiebeln abziehen, fein schneiden und zum Fleisch geben.", "Rettich schälen und raspeln.", "Die Paprika entkernen und klein schneiden. Die Peperoni ebenfalls fein schneiden.", "Gemüse nacheinander zum Fleisch geben und alles gar braten.", "Tomatenmark hinzufügen, mit Salz und Pfeffer abschmecken.", "Wasser zugießen und aufkochen.", "Spaghetti nach Packungsanweisung kochen und zusammen mit der Fleischsuppe servieren."], "tip": "Statt Spaghetti können auch Makkaroni verwendet werden.", "tradition": "Tradition aus Zentralasien."}, {"id": "dampfnudeln", "name": "Plautdietsche Dampfnudeln", "category": "Hauptspeisen", "emoji": "🥟", "color": "linear-gradient(145deg,#fff1ce,#dcbf7f)", "description": "Hefeteigröllchen, die zusammen mit Fleisch und Kartoffeln gegart werden.", "time": "ca. 2 Std.", "portions": "5–6 Portionen", "ingredients": ["Teig: ½ Packung frische Hefe, 300 ml warme Milch, 1 TL Salz, 500 g Mehl", "1 kg Fleisch, zum Beispiel dicke Rippen oder Nacken", "3 Zwiebeln", "3 Lorbeerblätter", "Salz und Pfeffer", "1½ kg Kartoffeln", "650 ml kochendes Wasser", "Öl zum Anbraten und Bestreichen"], "steps": ["Die Hefe zerbröckeln, in der warmen Milch auflösen und etwa 10 Minuten ruhen lassen.", "Salz und Mehl hinzufügen und einen lockeren Teig kneten.", "Den Teig etwa 1 Stunde gehen lassen, bis sich sein Volumen verdoppelt hat.", "Fleisch zerkleinern und in Öl anbraten. Zwiebeln, Lorbeerblätter, Salz und Pfeffer hinzufügen.", "Fleisch etwa 50 Minuten bei mittlerer Hitze schmoren.", "Teig ausrollen, mit Öl bestreichen, zusammenrollen und in 5–6 cm breite Röllchen schneiden.", "Röllchen abdecken und weitere 30 Minuten gehen lassen.", "Kartoffeln schälen, halbieren und zum Fleisch geben. Mit kochendem Wasser auffüllen und etwa 10 Minuten kochen.", "Dampfnudeln auflegen und zugedeckt ungefähr 25 Minuten köcheln lassen."], "tip": "Während des Garens den Deckel möglichst nicht anheben, damit der Dampf im Topf bleibt.", "tradition": "Traditionelles Gericht vieler plautdeutscher Familien."}, {"id": "plov", "name": "Plov", "category": "Hauptspeisen", "emoji": "🍚", "color": "linear-gradient(145deg,#ffdca2,#bf7a2f)", "description": "Traditionelles Reisgericht mit Fleisch, Möhren und einer ganzen Knoblauchknolle.", "time": "ca. 90 Min.", "portions": "12 Portionen", "ingredients": ["200 g Öl", "2 kg Fleisch", "1 kg Zwiebeln", "1 kg Möhren", "2 Tomaten", "Salz und Pfeffer", "ca. 2 l Wasser", "1 kg Reis", "1 Knolle Knoblauch"], "steps": ["Das Öl in einem großen Topf oder Wok erhitzen.", "Fleisch würfeln und kräftig anbraten.", "Zwiebeln in Ringe schneiden, zum Fleisch geben und goldbraun braten.", "Möhren in lange Stifte schneiden und kurz mitbraten.", "Tomaten schälen, würfeln und hinzufügen. Mit Salz und Pfeffer würzen.", "Wasser zugießen und die Masse etwas köcheln lassen.", "Reis hinzufügen und bei hoher Hitze kochen, bis die Flüssigkeit kaum noch sichtbar ist.", "Die Knoblauchknolle in den Plov stecken, den Topf abdecken und alles bei niedriger Hitze weitere 30 Minuten quellen lassen."], "tip": "Nach Geschmack eingeweichte Kichererbsen zugeben und frischen Salat dazu reichen.", "tradition": "Tradition aus Kasachstan und Zentralasien."}, {"id": "schaschlik", "name": "Schaschlik", "category": "Fleischgerichte", "emoji": "🍢", "color": "linear-gradient(145deg,#ffd0bb,#b54f35)", "description": "Marinierte Fleischspieße in drei traditionellen Varianten.", "time": "12–14 Std. Marinierzeit", "portions": "Große Familienmenge", "ingredients": ["Grundvariante: 5 kg Fleisch, 1 Knolle Knoblauch, ca. 2 kg Zwiebeln, 150 g Öl, 50 g Salz und Pfeffer", "Variante zwei: zusätzlich schwarzer Pfeffer, Cayennepfeffer, würzige Soße, Lorbeerblätter und Mineralwasser", "Variante drei: 5 kg Fleisch, 2 Becher Kefir, 1,2 kg Zwiebeln sowie Salz und Pfeffer"], "steps": ["Fleisch in etwa 4 × 4 cm große Würfel schneiden.", "Knoblauch schälen und klein schneiden, nicht pressen.", "Zwiebeln schälen und schneiden.", "Fleisch mit Zwiebeln, Knoblauch, Öl, Salz und Pfeffer gründlich vermischen.", "Mindestens 12 Stunden marinieren lassen.", "Fleisch auf Spieße stecken und über kräftiger Glut grillen.", "Für die zweite Variante alle weiteren Gewürze, Soße und Mineralwasser untermischen und 12–14 Stunden marinieren.", "Für die dritte Variante Fleisch mit Kefir, Zwiebeln, Salz und Pfeffer mischen und mindestens 12 Stunden ziehen lassen."], "tip": "Die Marinade immer gut durchziehen lassen. Das sorgt für zartes Fleisch und kräftigen Geschmack.", "tradition": "Beliebtes Fest- und Grillgericht aus Osteuropa und Zentralasien."}];
+const grid=document.getElementById("grid");
+const filters=document.getElementById("filters");
+const search=document.getElementById("search");
+const count=document.getElementById("count");
+const empty=document.getElementById("empty");
+const listView=document.getElementById("listView");
+const detail=document.getElementById("detail");
+let active="Alle";
+
+const categories=["Alle",...new Set(recipes.map(r=>r.category))];
+
+function esc(value){
+  return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function renderFilters(){
+  filters.innerHTML=categories.map(c=>
+    `<button class="filter ${c===active?"active":""}" data-category="${esc(c)}">${esc(c)}</button>`
+  ).join("");
+  filters.querySelectorAll("button").forEach(button=>{
+    button.onclick=()=>{active=button.dataset.category;renderFilters();renderCards();};
+  });
+}
+
+function renderCards(){
+  const q=search.value.trim().toLowerCase();
+  const items=recipes.filter(r=>
+    (active==="Alle"||r.category===active) &&
+    (!q||r.name.toLowerCase().includes(q)||r.description.toLowerCase().includes(q))
+  );
+  count.textContent=items.length+(items.length===1?" Gericht":" Gerichte");
+  empty.style.display=items.length?"none":"block";
+  grid.innerHTML=items.map(r=>`
+    <article class="card compact-card" data-id="${r.id}">
+      <div class="thumb">
+        <img src="images/${r.id}.jpg" alt="${esc(r.name)}" class="recipe-image">
+      </div>
+      <div class="card-body">
+        <div class="card-topline">
+          <h3>${esc(r.name)}</h3>
+          <span class="chevron">›</span>
+        </div>
+        <p>${esc(r.description)}</p>
+        <div class="meta"><span>◷ ${esc(r.time)}</span><span>♟ ${esc(r.portions)}</span></div>
+      </div>
+    </article>
+  `).join("");
+  grid.querySelectorAll(".card").forEach(card=>{
+    card.onclick=()=>openRecipe(card.dataset.id);
+  });
+}
+
+function openRecipe(id){
+  const r=recipes.find(x=>x.id===id);
+  if(!r)return;
+  location.hash=id;
+  listView.classList.add("hidden");
+  detail.classList.add("open");
+  detail.innerHTML=`
+    <div class="detail-hero" style="background:${r.color}">
+      <button class="detail-back" type="button">‹</button>
+      <img src="images/${r.id}.jpg" alt="${esc(r.name)}" class="recipe-image">
+    </div>
+    <article class="detail-card">
+      <h1>${esc(r.name)}</h1>
+      <p class="detail-desc">${esc(r.description)}</p>
+      <div class="tradition-box">
+        <strong>🌍 Kultureller Hintergrund</strong><br>
+        ${esc(r.tradition)}
+      </div>
+      <div class="quick">
+        <div><strong>◷ Zeit</strong><br>${esc(r.time)}</div>
+        <div><strong>♟ Menge</strong><br>${esc(r.portions)}</div>
+        <div><strong>▦ Kategorie</strong><br>${esc(r.category)}</div>
+        <div><strong>♡ Sammlung</strong><br>Traditionell</div>
+      </div>
+      <section class="recipe-section">
+        <h2>Zutaten</h2>
+        <ul class="ingredients">${r.ingredients.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
+      </section>
+      <section class="recipe-section">
+        <h2>Zubereitung</h2>
+        <ol class="steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
+      </section>
+      <section class="recipe-section">
+        <h2>Tipp</h2>
+        <div class="tip">${esc(r.tip)}</div>
+      </section>
+    </article>
+  `;
+  detail.querySelector(".detail-back").onclick=closeDetail;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function closeDetail(){
+  history.replaceState(null,"",location.pathname);
+  detail.classList.remove("open");
+  detail.innerHTML="";
+  listView.classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+search.oninput=renderCards;
+renderFilters();
+renderCards();
+
+if(location.hash){
+  const id=location.hash.slice(1);
+  if(recipes.some(r=>r.id===id))openRecipe(id);
+}
+</script>
+</body>
+</html>

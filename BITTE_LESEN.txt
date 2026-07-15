@@ -1,0 +1,19 @@
+MIEN PLAUT – GITHUB-PAGES-VERSION
+
+Diese Version ist für GitHub Pages vorbereitet.
+
+HOCHLADEN:
+1. ZIP-Datei entpacken.
+2. Bei GitHub ein neues Repository erstellen, zum Beispiel „mien-plaut“.
+3. Alle entpackten Dateien direkt hochladen.
+4. Repository öffnen: Settings → Pages.
+5. Source: „Deploy from a branch“.
+6. Branch: „main“.
+7. Ordner: „/(root)“.
+8. Speichern.
+
+Wichtig:
+- index.html muss direkt im Hauptverzeichnis liegen.
+- Den Ordner images vollständig hochladen.
+- Die Datei .nojekyll behalten.
+- Nicht nur die ZIP-Datei in das Repository legen, sondern die ZIP vorher entpacken.
